@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>What is Country Code? — HTML/CSS/JS</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#94a3b8;--success:#10b981}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef8;background:linear-gradient(180deg,#071028 0%,#071129 100%)}
+    .wrap{max-width:980px;margin:28px auto;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    h1{margin:6px 0 12px;font-size:20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:14px}
+    .card{background:var(--card);padding:12px;border-radius:12px;min-height:420px;display:flex;flex-direction:column}
+    
+    /* Search Section Styles */
+    .search-box{background:rgba(255,255,255,0.03);padding:20px;border-radius:8px;text-align:center;margin-bottom:20px}
+    input[type="text"]{width:100%;padding:14px;border-radius:8px;border:1px solid #1e293b;background:#0f1724;color:white;font-size:16px;margin-bottom:12px;box-sizing:border-box}
+    input[type="text"]:focus{outline:none;border-color:var(--accent)}
+    
+    .flag-display{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;min-height:200px}
+    .emoji-flag{font-size:120px;line-height:1}
+    .country-title{font-size:24px;font-weight:700;margin-top:10px;text-align:center;color:#fff}
+    
+    .controls{display:flex;gap:8px;margin-top:auto}
+    button{background:var(--accent);border:none;color:white;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:500;transition:opacity 0.2s}
+    button:hover{opacity:0.9}
+    button.secondary{background:#334155}
+
+    .muted{color:var(--muted);font-size:13px}
+    .result{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;margin-bottom:10px}
+    .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+    .value{font-size:16px;font-weight:600;color:#e6eef8}
+    
+    ul{padding-left:18px;margin:8px 0}
+    .small{font-size:13px}
+    footer{margin-top:auto;padding-top:12px;color:var(--muted);font-size:13px}
+    
+    a{color:var(--muted);text-decoration:none;transition:color 0.2s}
+    a:hover{color:var(--accent)}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr;}.card{min-height:auto}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>What is Country Code?</h1>
+    <div class="grid">
+      <div class="card">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Enter code (+1) or country name (USA)..." autocomplete="off">
+            <div class="controls" style="justify-content: center;">
+                <button id="searchBtn">Search</button>
+                <button id="detectBtn" class="secondary">📍 Detect My Location</button>
+            </div>
+            <div class="muted small" style="margin-top:8px" id="status">Ready to search.</div>
+        </div>
+
+        <div class="flag-display" id="resultDisplay" style="opacity:0.3">
+            <div class="emoji-flag" id="flag">🌍</div>
+            <div class="country-title" id="countryName">Select a Country</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="result">
+          <div class="label">Dialing Code</div>
+          <div class="value" id="dialCode" style="font-size:28px;color:var(--accent)">—</div>
+        </div>
+
+        <div class="result">
+            <div class="label">ISO Codes (2 & 3 Letter)</div>
+            <div class="value" id="isoCode">—</div>
+        </div>
+
+        <div class="result">
+            <div class="label">Currency</div>
+            <div class="value" id="currency">—</div>
+        </div>
+
+        <div class="result">
+          <div class="muted small">How it works</div>
+          <ul class="small">
+            <li>Type a dialing code (e.g., <strong>92</strong>) to find the country.</li>
+            <li>Type a country name to find its code.</li>
+            <li>Use "Detect My Location" to find your IP-based country code instantly.</li>
+          </ul>
+        </div>
+
+        <footer>
+          Need an API or bulk list? Check the resources below.<br><br>
+          <a href="#" target="_blank">country code finder</a> | 
+          <a href="https://github.com/kumailbalti" target="_blank">kumailbalti</a> | 
+          <a href="#" target="_blank">what is country code</a>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Comprehensive Country List (Subset for demo, typically this would be larger)
+    const countries = [
+        {name:"Afghanistan", code:"+93", iso:"AF", iso3:"AFG", flag:"🇦🇫", currency:"AFN"},
+        {name:"Australia", code:"+61", iso:"AU", iso3:"AUS", flag:"🇦🇺", currency:"AUD"},
+        {name:"Bangladesh", code:"+880", iso:"BD", iso3:"BGD", flag:"🇧🇩", currency:"BDT"},
+        {name:"Brazil", code:"+55", iso:"BR", iso3:"BRA", flag:"🇧🇷", currency:"BRL"},
+        {name:"Canada", code:"+1", iso:"CA", iso3:"CAN", flag:"🇨🇦", currency:"CAD"},
+        {name:"China", code:"+86", iso:"CN", iso3:"CHN", flag:"🇨🇳", currency:"CNY"},
+        {name:"France", code:"+33", iso:"FR", iso3:"FRA", flag:"🇫🇷", currency:"EUR"},
+        {name:"Germany", code:"+49", iso:"DE", iso3:"DEU", flag:"🇩🇪", currency:"EUR"},
+        {name:"India", code:"+91", iso:"IN", iso3:"IND", flag:"🇮🇳", currency:"INR"},
+        {name:"Indonesia", code:"+62", iso:"ID", iso3:"IDN", flag:"🇮🇩", currency:"IDR"},
+        {name:"Iran", code:"+98", iso:"IR", iso3:"IRN", flag:"🇮🇷", currency:"IRR"},
+        {name:"Italy", code:"+39", iso:"IT", iso3:"ITA", flag:"🇮🇹", currency:"EUR"},
+        {name:"Japan", code:"+81", iso:"JP", iso3:"JPN", flag:"🇯🇵", currency:"JPY"},
+        {name:"Mexico", code:"+52", iso:"MX", iso3:"MEX", flag:"🇲🇽", currency:"MXN"},
+        {name:"Nigeria", code:"+234", iso:"NG", iso3:"NGA", flag:"🇳🇬", currency:"NGN"},
+        {name:"Pakistan", code:"+92", iso:"PK", iso3:"PAK", flag:"🇵🇰", currency:"PKR"},
+        {name:"Philippines", code:"+63", iso:"PH", iso3:"PHL", flag:"🇵🇭", currency:"PHP"},
+        {name:"Russia", code:"+7", iso:"RU", iso3:"RUS", flag:"🇷🇺", currency:"RUB"},
+        {name:"Saudi Arabia", code:"+966", iso:"SA", iso3:"SAU", flag:"🇸🇦", currency:"SAR"},
+        {name:"South Korea", code:"+82", iso:"KR", iso3:"KOR", flag:"🇰🇷", currency:"KRW"},
+        {name:"Spain", code:"+34", iso:"ES", iso3:"ESP", flag:"🇪🇸", currency:"EUR"},
+        {name:"Turkey", code:"+90", iso:"TR", iso3:"TUR", flag:"🇹🇷", currency:"TRY"},
+        {name:"United Arab Emirates", code:"+971", iso:"AE", iso3:"ARE", flag:"🇦🇪", currency:"AED"},
+        {name:"United Kingdom", code:"+44", iso:"GB", iso3:"GBR", flag:"🇬🇧", currency:"GBP"},
+        {name:"United States", code:"+1", iso:"US", iso3:"USA", flag:"🇺🇸", currency:"USD"},
+        {name:"Vietnam", code:"+84", iso:"VN", iso3:"VNM", flag:"🇻🇳", currency:"VND"}
+    ];
+
+    // Elements
+    const input = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const detectBtn = document.getElementById('detectBtn');
+    const statusLabel = document.getElementById('status');
+    const resultDisplay = document.getElementById('resultDisplay');
+    
+    // Output Elements
+    const flagEl = document.getElementById('flag');
+    const countryNameEl = document.getElementById('countryName');
+    const dialCodeEl = document.getElementById('dialCode');
+    const isoCodeEl = document.getElementById('isoCode');
+    const currencyEl = document.getElementById('currency');
+
+    function setStatus(s){ statusLabel.innerText = s; }
+
+    // Search Logic
+    function performSearch(){
+        const query = input.value.trim().toLowerCase().replace(/^\+/, ''); // remove leading + for matching
+        if(!query) return;
+
+        setStatus('Searching...');
+        
+        // Find by code (exact or check if country code matches)
+        let result = countries.find(c => c.code.replace('+','') === query);
+
+        // If not found by code, try by name (fuzzy) or ISO
+        if(!result){
+            result = countries.find(c => 
+                c.name.toLowerCase().includes(query) || 
+                c.iso.toLowerCase() === query || 
+                c.iso3.toLowerCase() === query
+            );
+        }
+
+        if(result){
+            updateUI(result);
+            setStatus('Result found.');
+        } else {
+            setStatus('No country found in database.');
+            resetUI();
+        }
+    }
+
+    function updateUI(data){
+        resultDisplay.style.opacity = '1';
+        flagEl.innerText = data.flag;
+        countryNameEl.innerText = data.name;
+        
+        dialCodeEl.innerText = data.code;
+        isoCodeEl.innerText = `${data.iso} / ${data.iso3}`;
+        currencyEl.innerText = data.currency;
+    }
+
+    function resetUI(){
+        resultDisplay.style.opacity = '0.3';
+        flagEl.innerText = '🌍';
+        countryNameEl.innerText = 'Unknown';
+        dialCodeEl.innerText = '—';
+        isoCodeEl.innerText = '—';
+        currencyEl.innerText = '—';
+    }
+
+    // Event Listeners
+    searchBtn.addEventListener('click', performSearch);
+    input.addEventListener('keypress', (e)=>{ if(e.key === 'Enter') performSearch() });
+
+    // IP Detection
+    detectBtn.addEventListener('click', async ()=>{
+        detectBtn.disabled = true;
+        detectBtn.innerText = 'Locating...';
+        setStatus('Fetching location data...');
+        
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            
+            if(data && data.country_code){
+                // Auto fill and search
+                const detectedISO = data.country_code; // e.g., "PK"
+                const found = countries.find(c => c.iso === detectedISO);
+                
+                if(found){
+                    input.value = found.name;
+                    updateUI(found);
+                    setStatus(`Detected location: ${found.name}`);
+                } else {
+                    // Fallback if not in local list, use API data
+                    input.value = data.country_name;
+                    updateUI({
+                        name: data.country_name,
+                        flag: '📍', // Generic pin if flag unknown
+                        code: data.country_calling_code,
+                        iso: data.country_code,
+                        iso3: data.country_code_iso3,
+                        currency: data.currency
+                    });
+                    setStatus('Location found (from API).');
+                }
+            } else {
+                setStatus('Could not detect location.');
+            }
+        } catch (error) {
+            console.error(error);
+            setStatus('Error fetching location.');
+        }
+        
+        detectBtn.disabled = false;
+        detectBtn.innerText = '📍 Detect My Location';
+    });
+  </script>
+</body>
+</html>
